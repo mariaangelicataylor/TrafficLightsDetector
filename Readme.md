@@ -8,21 +8,7 @@ We’ve all been there: a light turns green and the car in front of you doesn’
 In this project, we will develop a model to recognize traffic-light state in the car driving direction. We will use the bosh data set and explain step by step to make test this model. 
 This project is a fork of https://github.com/berktepebag/Traffic-light-detection-with-YOLOv3-BOSCH-traffic-light-dataset
 
-## Step 1: Download Bosch Small Traffic Lights Dataset:
-
-https://hci.iwr.uni-heidelberg.de/node/6132
-
-Register and a code will be sent to our e-mail address:
-
-<img src="imgs/download_bosch_traffic_dataset.png" alt="Download Bosch Small Traffic Lights Dataset">
-
-Dataset is around 6 GB, so it will take a while to download it. When download is done you should be using 7-zip to open it (In Ubuntu Archieve Manager is not opening the zipped file!).
-
-<img src="imgs/dataset_tree.png" alt="Bosch Small Traffic Lights Dataset Tree">
-
-After extracting we see that we have 7 different folders and 5093 images which is a good number for training traffic lights.
-
-## Step 2: Download YOLOv3
+## Step 1: Download YOLOv3
 
 Here is the <a href='https://pjreddie.com/darknet/yolo/' >YOLO offical page</a> to proceed with setup and for more details. Let's clone and make it with:
 
@@ -42,7 +28,7 @@ Now we can run an example:
 
 A result image will appear and we can see that YOLO found a dog, a bicycle and a truck. YOLO can be used for multiple images, with webcam and videos.
 
-## Preparing the Dataset for Traning
+## Step 2: Download bosh tools
 
 As we already know that we need labels for the input images. In a standart CNN it would be a label for each image but since we are looking for parts of one image we need more than this. So YOLO is asking for a .txt file for each image as:
 ```html
@@ -56,55 +42,56 @@ git clone git@github.com:bosch-ros-pkg/bstld.git
 
 If you already don't have SSH key and getting an error, you have to set one and link it to your Github account in order to clone this repository. You can follow <a href="https://help.github.com/en/articles/connecting-to-github-with-ssh"> Github tutorial for SSH</a>.
 
-### Data Folders Preparation
-**Warning:** Extracted folder has white spaces in it's name. Please avoid white spaces and replace them with '-' (i.e Bosch-Traffic-Light-Dataset). Otherwise paths will be unusable in some cases! 
 
-To keep dataset in order we will create 3 folders under rgb/train/
+## I cloned this repo (bstld) inside the darknet folder 
+
+## Step 3: Download Bosch Small Traffic Lights Dataset:
+
+https://hci.iwr.uni-heidelberg.de/node/6132
+
+Register and a code will be sent to our e-mail address:
+
+<img src="imgs/download_bosch_traffic_dataset.png" alt="Download Bosch Small Traffic Lights Dataset">
+
+Dataset is around 6 GB, so it will take a while to download it. When download is done you should be using 7-zip to open it (In Ubuntu Archieve Manager is not opening the zipped file!), there are 5093 images for training.
+
+## Step 4: Data Folders Preparation - bstld
+
+## Inside the bstld folder you will create a folder named rgb, inside rbg you need to create a folder train and a folder test. Inside train you will crate three folders: 
+
 1. traffic_light_images
 2. traffic_light_xmls
 3. traffic_light_labels
 
 ```html
-cd rgb/train
-```
-
-Since images are in separate folders and it will be easier to manipulate them when they are in one folder let's put them all together under rgb/train/traffic_light_images folder.
-
-```html
+mkdir rgb
+cd rgb
+mkdir train
+mkdir test
+cd train
 mkdir traffic_light_images
-find . -type f -print0 | xargs -0 --no-run-if-empty cp --target-directory=traffic_light_images
-```
-If you do not want to waste your space you should change 'cp' with 'mv' to move the images instead of making a copy of them. Now we have all the images under traffic_light_images folder.
-
-
-Now create xmls folder and run:
-
-```html
 mkdir traffic_light_xmls
+mkdir traffic_light_labels
 ```
 **Update:** PyYaml's load function has been <a href=https://stackoverflow.com/questions/69564817/typeerror-load-missing-1-required-positional-argument-loader-in-google-col>deprecated</a>, so if you are getting an error with yaml.load() you should change bosch_to_pascal.py line 60 to yaml.safe_load() .
 
 
-Now go back to top Bosch-Traffic-Light-Dataset folder and run bosch_to_pascal.py script from bstld, which will create necessary xml files for training with YOLO. Where first argument is PATH_TO_DATASET/train.yaml and second argument is rgb/train/traffic_light_xmls folder which we recently created:
+Now go back to bstld folder and run bosch_to_pascal.py script, which will create necessary xml files for training with YOLO. Where first argument is PATH_TO_DATASET/train.yaml and second argument is rgb/train/traffic_light_xmls folder which we recently created:
 ```html
 cd ../..
-python bstld/bosch_to_pascal.py train.yaml rgb/train/traffic_light_xmls/
+python bosch_to_pascal.py train.yaml rgb/train/traffic_light_xmls/
 ```
 
-Now we have 5093 xml label files but we have to convert VOC to YOLO type labels with the script from darknet. So create a traffic_light_labels folder to /rgb/train/
+Now we have 5093 xml label files but we have to convert VOC to YOLO type labels with the script from darknet. 
 
-```html
-mkdir rgb/train/traffic_light_labels
-```
-
-### darknet/traffic-lights folder
+## Step 5: traffic-lights folder in darknet
 Let's go back to the darknet folder and create a folder named traffic-lights. We will put our files in this folder to reach them easily.
 
 ```html
 mkdir traffic-lights 
 ```
 
-#### VOC -> YOLO
+#### Step 6: VOC -> YOLO
 From darknet/scripts folder, make a copy of the voc_label.py and name it bosch_voc_to_yolo_converter.py and put it under traffic-lights folder. This script will convert VOC type labels to YOLO type labels.
 
 ```html
