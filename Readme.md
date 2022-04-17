@@ -1,6 +1,4 @@
-# Detecting Traffic Lights in Real-time with YOLOv3
-
-### **UPDATE:** I revisited the Repo to make it easier to follow and there was an update in PyYaml which caused some error. Please revert to <a href="https://github.com/berktepebag/Traffic-light-detection-with-YOLOv3-BOSCH-traffic-light-dataset/tree/e55e09257433872089b9d148499eb976e2aca2b4">this commit<a/> if you were following this tutorial before 22 October 2021. If you are a new comer, please test the code and if you see any problems let me know. Best.
+# Detecting Traffic Recognition YOLOv3
 
 YOLOv3 is a real-time object detection system, and it runs really fast on the CUDA supported GPUs (NVIDIA). So our aim is to train the model using the Bosch Small Traffic Lights Dataset and run it on images, videos and Carla simulator. Finally we will try it on NVIDIA Jetson Nano, which is a very small and capable SoC.
 
