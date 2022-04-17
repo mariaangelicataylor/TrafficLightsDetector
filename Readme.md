@@ -1,14 +1,18 @@
 # Detecting Traffic Recognition YOLOv3
 
-YOLOv3 is a real-time object detection system, and it runs really fast on the CUDA supported GPUs (NVIDIA). So our aim is to train the model using the Bosch Small Traffic Lights Dataset and run it on images, videos and Carla simulator. Finally we will try it on NVIDIA Jetson Nano, which is a very small and capable SoC.
+Maria Angelica Taylor 
+AI for Autonomous Vehicles WPI. 
+Assigment 8
 
-<img src="imgs/intro.png" alt="results">
+We’ve all been there: a light turns green and the car in front of you doesn’t budge. No one likes to get stuck behind a vehicle that doesn’t notice when a light change. Also, a system that can countdown on red light the time remaining until a change to green can save a significant quantity of fuel in city driving (e.g., restart engine five seconds before green) and advise driver to start braking early if it will not make it through a green light. 
+In this project, we will develop a model to recognize traffic-light state in the car driving direction. We will use the bosh data set and explain step by step to make test this model. 
+This project is a fork of https://github.com/berktepebag/Traffic-light-detection-with-YOLOv3-BOSCH-traffic-light-dataset
 
-First start with downloading Bosch Small Traffic Lights Dataset:
+## Step 1: Download Bosch Small Traffic Lights Dataset:
 
 https://hci.iwr.uni-heidelberg.de/node/6132
 
-In order to download dataset we have to register and a code will be sent to our e-mail address:
+Register and a code will be sent to our e-mail address:
 
 <img src="imgs/download_bosch_traffic_dataset.png" alt="Download Bosch Small Traffic Lights Dataset">
 
@@ -18,12 +22,9 @@ Dataset is around 6 GB, so it will take a while to download it. When download is
 
 After extracting we see that we have 7 different folders and 5093 images which is a good number for training traffic lights.
 
+## Step 2: Download YOLOv3
 
-Obviously we could write our own classifier, a Convolutional Neural Network (CNN), but then it will not be possible to run it realtime so we will use YOLOv3. 
-
-## YOLOv3
-
-One of the best thing about YOLO is that it is running out of the box and supports well known datasets such as Pascal VOC, COCO and Open Images dataset. You can follow the <a href='https://pjreddie.com/darknet/yolo/' >YOLO offical page</a> to proceed with setup and for more details. Let's clone and make it with:
+Here is the <a href='https://pjreddie.com/darknet/yolo/' >YOLO offical page</a> to proceed with setup and for more details. Let's clone and make it with:
 
 ```html
 git clone https://github.com/pjreddie/darknet
@@ -39,7 +40,7 @@ Now we can run an example:
 ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
 ```
 
-A result image will appear and we can see that YOLO found a dog, a bicycle and a truck. YOLO can be used for multiple images, with webcam and videos. I will not go into details here as you can follow the original YOLO website so I would like to show you how to prepare the dataset and train it.
+A result image will appear and we can see that YOLO found a dog, a bicycle and a truck. YOLO can be used for multiple images, with webcam and videos.
 
 ## Preparing the Dataset for Traning
 
@@ -397,46 +398,3 @@ Add:
 	
 Change:
 - IplImage ipl = m -> IplImage ipl = cvIplImage(m);
-
-## YOLO ROS
-
-Videos are good for showing the results but we need something more interactive which makes <a href="http://carla.org/">Carla simulator</a> a great choice. Carla has built in ROS connections so it makes it even better for our case. Follow the instructions on the website to start using Carla. We can write our own nodes for traffic light detection but still we would like to use YOLO for classifcation. Since we have weights, cfg and data files, we can use them with this <a href="https://github.com/leggedrobotics/darknet_ros">leggedrobotics/darknet_ros repository</a> that combines YOLO and ROS and makes our lives easier.
-
-
-Once we clone the darknet_ros repository follow the instructions and run Carla server with:
-```html
-cd ~/UnrealEngine_4.22/carla/Dist/CARLA_Shipping_0.9.6-27-g8e2a15f3/LinuxNoEditor'
-
-carla_srv_run='./CarlaUE4.sh -carla-server -windowed -ResX=320 -ResY=240 -benchmark -fps=10'
-```
-Clone, make and launch carla_ros_bridge:
-```html
-roslaunch carla_ros_bridge carla_ros_bridge.launch
-```
-Go to the carla/PythonAPI/examples folder and run:
-
-```html
-python manual_control.py --rolename=ego_vehicle
-```
-
-Finally launch darknet_ros:
-
-```html
-roslaunch darknet_ros darknet_ros.launch image:=/carla/ego_vehicle/camera/rgb/front/image_color
-```
-<img src="imgs/yolov3_ROS_carla.png" alt="YOLOv3 Traffic light detector ROS Carla">
-
-A new window will pop and show if any traffic lights are classified.
-
-### References:
-
-1. <a href="https://pjreddie.com/darknet/yolo/"> YOLOv3 Website </a>
-2. <a href="https://hci.iwr.uni-heidelberg.de/node/6132"> BOSCH Traffic Lights Dataset</a>
-3. <a href="https://github.com/bosch-ros-pkg/bstld"> Bosch Small Traffic Lights Dataset Github Repository</a>
-4. <a href="https://www.learnopencv.com/training-yolov3-deep-learning-based-custom-object-detector/">  LearnOpenCV, Training YOLOv3 : Deep Learning based Custom Object Detector</a>
-5. <a href="http://emaraic.com/blog/yolov3-custom-object-detector">EMARAIC, How to build a custom object detector using YOLOv3 in Python</a>
-6. <a href="https://www.learnopencv.com/deep-learning-based-object-detection-using-yolov3-with-opencv-python-c/"> Deep Learning based Object Detection using YOLOv3 with OpenCV ( Python / C++ ) </a>
-7. <a href="https://github.com/leggedrobotics/darknet_ros">YOLO ROS: Real-Time Object Detection for ROS Github Repository</a>
-8. <a href="https://github.com/pjreddie/darknet/issues/568>YOLOv3"> Anchor Calculation Explained </a>
-9. <a href="https://github.com/carla-simulator/ros-bridge"> Carla ROS bridge</a>
-10. <a href="https://silvamfpedro.github.io/thesis-blog/index.html"> Study and Adaptation of the Autonomous Driving Simulator CARLA for ATLASCAR2</a>
