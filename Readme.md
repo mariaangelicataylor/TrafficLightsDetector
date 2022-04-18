@@ -6,9 +6,28 @@ Assigment 8
 
 We’ve all been there: a light turns green and the car in front of you doesn’t budge. No one likes to get stuck behind a vehicle that doesn’t notice when a light change. Also, a system that can countdown on red light the time remaining until a change to green can save a significant quantity of fuel in city driving (e.g., restart engine five seconds before green) and advise driver to start braking early if it will not make it through a green light. 
 In this project, we will develop a model to recognize traffic-light state in the car driving direction. We will use the bosh data set and explain step by step to make test this model. 
+
+Note that the homework instructions indicated to use tensorflow and keras, however the prof. comment on the discussion board that we can use YOLO to acomplish this goal. 
+
 This project is a fork of https://github.com/berktepebag/Traffic-light-detection-with-YOLOv3-BOSCH-traffic-light-dataset
 
 This repo contains the instructions to set up your enviroment and the folder structure, but you need to clone the darknet (YOLO) and bstld repos.
+
+## Demo: 
+
+### Label = Red
+<img src="imgs/39782-red.jpg" alt="red">
+
+### Label = Green
+### Label = Yellow
+### Label = Off
+### Label = Red Left
+### Label = Red Right
+### Label = Green Left
+### Label = Green Right
+
+
+
 
 ## Step 1: Download YOLOv3
 
@@ -51,9 +70,7 @@ If you already don't have SSH key and getting an error, you have to set one and 
 
 https://hci.iwr.uni-heidelberg.de/node/6132
 
-Register and a code will be sent to our e-mail address:
-
-<img src="imgs/download_bosch_traffic_dataset.png" alt="Download Bosch Small Traffic Lights Dataset">
+Register and a code will be sent to our e-mail address.
 
 Dataset is around 6 GB, so it will take a while to download it. When download is done you should be using 7-zip to open it (In Ubuntu Archieve Manager is not opening the zipped file!), there are 5093 images for training.
 
@@ -81,7 +98,7 @@ mkdir traffic_light_labels
 Now go back to bstld folder and run bosch_to_pascal.py script, which will create necessary xml files for training with YOLO. Where first argument is PATH_TO_DATASET/train.yaml and second argument is rgb/train/traffic_light_xmls folder which we recently created:
 ```html
 cd ../..
-python bosch_to_pascal.py train.yaml rgb/train/traffic_light_xmls/
+python bosch_to_pascal.py label_files/train.yaml rgb/train/traffic_light_xmls/
 ```
 Now we have 5093 xml label files but we have to convert VOC to YOLO type labels with the script from darknet. 
 
@@ -103,18 +120,19 @@ Run it:
 ```html
 python make_xml_list.py PATH_TO_DATASET/darknet/bstld/rgb/train/traffic_light_xmls/
 ```
-It will create bosch_traffic_light_xmls_list.txt file.
+It you display a mensage: Length of the .xml xml_files:  5093
+Also it will create bosch_traffic_light_xmls_list.txt file in the traffic-lights folder. This file will have the .xml paths. 
 
 Now we can convert VOC to YOLO format in the traffic lights folder:
 
 ```html
-python bosch_voc_to_yolo_converter.py ~/bstld/rgb/train/traffic_light_labels/ ./bosch_traffic_light_xmls_list.txt ~/bstld/rgb/train/traffic_light_images/
+python bosch_voc_to_yolo_converter.py ~/darknet/bstld/rgb/train/traffic_light_labels ./bosch_traffic_light_xmls_list.txt ~/darknet/bstld/rgb/train/traffic_light_images
 ```
 
 For the arguments, we have to give:
 1. output_folder: PATH_TO_DATASET/rgb/train/traffic_light_labels)
 2. xmls_list which is a .txt file that has the paths to the xml files: ./bosch_traffic_light_xmls_list.txt
-3. Images folder path which we are going to use for training: ~/bstld/rgb/train/traffic_light_images/
+3. Images folder path which we are going to use for training: ~/darknet/bstld/rgb/train/traffic_light_images/
 
 We have to create train.txt and test.txt which are list of the paths' of the relative images. Write a basic splitter script named train_test_split.py:
 
@@ -131,7 +149,7 @@ mkdir backup
 ```
 Copy the file from this repo to the backup folder. 
 
-Copy the yolov3-tiny-bosch.cfg nto traffic-lights folder.
+Copy the yolov3-tiny-bosch.cfg into traffic-lights folder.
 
 ```html
 cp ../cfg/yolov3-tiny.cfg yolov3-tiny-bosch.cfg
@@ -141,20 +159,19 @@ We will use the transfer learning where we use the pre-trained VOC data and just
 
 Download <a href="https://pjreddie.com/media/files/darknet53.conv.74"> weights of the darknet53 model</a> and train:
 
+If you want to train run the following command: 
+
 ```html
 cd ..
 ./darknet detector train traffic-lights/voc-bosch.data traffic-lights/yolov3-tiny-bosch.cfg darknet53.conv.74
 ```
 
-After training done (after 30000 images results are getting sufficient) try it with:
-```html
-./darknet detector demo traffic-lights/voc-bosch.data traffic-lights/yolov3-tiny-bosch.cfg traffic-lights/backup/yolov3-tiny-bosch_40000.weights <video file>
-```
+After training done (after 30000 images results are getting sufficient) try it with, backup/yolov3-tiny-bosch_40000.weights is already in this repo to test. Go to the darknet top folder to run the following cmd. 
 
 ## Image Demo
 
 ```html
-./darknet detect traffic-lights/yolov3-tiny-bosch.cfg traffic-lights/backup/yolov3-tiny-bosch_40000.weights data/XXX.jpg
+./darknet detector test traffic-lights/voc-bosch.data traffic-lights/yolov3-tiny-bosch.cfg traffic-lights/backup/yolov3-tiny-bosch_40000.weights data/40344.png
 ```
 
 ## Video Demo
@@ -165,22 +182,7 @@ Let's try our classifier with a video:
 ./darknet detector demo traffic-lights/voc-bosch.data traffic-lights/yolov3-tiny-bosch.cfg traffic-lights//backup/yolov3-tiny-bosch_40000.weights <video file>
 ```
 
-<img src="imgs/traffic_light_detector_demo.png" alt="YOLOv3 Traffic light detector demo">
-	
 ### Probable Problems with OpenCv
 	
-If you are having problem while running make with OpenCv=1:
-	
-1. <a href="https://stackoverflow.com/questions/55306007/how-to-compile-yolov3-with-opencv">Modify Makefile</a>
-Change opencv -> opencv4
-- LDFLAGS+= `pkg-config --libs opencv4` -lstdc++
-- COMMON+= `pkg-config --cflags opencv4` 
-2. <a href="https://stackoverflow.com/questions/64885148/error-iplimage-does-not-name-a-type-when-trying-to-build-darknet-with-opencv"> Modify /src/image_opencv.cpp</a>
-	
-Add:
-- #include "opencv2/core/core_c.h"
-- #include "opencv2/videoio/legacy/constants_c.h"
-- #include "opencv2/highgui/highgui_c.h"
-	
-Change:
-- IplImage ipl = m -> IplImage ipl = cvIplImage(m);
+If you are having problem while running make with OpenCv=1
+Go to the Makefile in the darknet folder and change to OpenCV=1, in the terminal make again.
