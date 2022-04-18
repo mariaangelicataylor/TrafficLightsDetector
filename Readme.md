@@ -67,7 +67,7 @@ There turn right is very rare, and there is only five samples in the dataset of 
 ### Label = Green Left
 bstld/rgb/test/29430.png: Predicted in 1.603386 seconds.
 Green: 57%
-<img src="imgs/28944-gl.jpg" alt="gl">
+<img src="imgs/29430-gl.jpg" alt="gl">
 More training need in the green left images since it identify them as green. 
 
 ### Label = Green Right
