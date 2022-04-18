@@ -12,20 +12,75 @@ Note that the homework instructions indicated to use tensorflow and keras, howev
 This project is a fork of https://github.com/berktepebag/Traffic-light-detection-with-YOLOv3-BOSCH-traffic-light-dataset
 
 This repo contains the instructions to set up your enviroment and the folder structure, but you need to clone the darknet (YOLO) and bstld repos.
+This network perform favorable in Green and Red. Most of the time Yellow is identified as red, and the lefts R and G are identified, but the right have poor performance since this signal is rare. A larger data set is needed with this unique cases. but for green and red identification this network is acceptable. 
 
 ## Demo: 
 
 ### Label = Red
+bstld/rgb/test/39782.png: Predicted in 1.641014 seconds.
+Red: 66%
+Red: 65%
+
 <img src="imgs/39782-red.jpg" alt="red">
 
 ### Label = Green
+bstld/rgb/test/40344.png: Predicted in 1.524883 seconds.
+Green: 92%
+Green: 55%
+
+
+<img src="imgs/40344-green.jpg" alt="green">
+
+
 ### Label = Yellow
+bstld/rgb/test/28804.png: Predicted in 1.665016 seconds.
+Red: 74%
+Red: 72%
+Red: 69%
+Red: 65%
+Red: 62%
+
+<img src="imgs/28804-yellow.jpg" alt="yellow">
+Note that the network needs label it as red instead of yellow, more training in yellow is needed such that the netwrok can identify them.
+
 ### Label = Off
+
+<img src="imgs/24100-off.jpg" alt="off">
+
 ### Label = Red Left
+bstld/rgb/test/28944.png: Predicted in 1.595993 seconds.
+RedLeft: 72%
+
+<img src="imgs/28944-redleft.jpg" alt="rl">
+The red left was identified but not the red lights for going straight
+
 ### Label = Red Right
+bstld/rgb/test/455444.png: Predicted in 1.515549 seconds.
+Red: 92%
+Red: 88%
+Red: 86%
+Red: 70%
+
+<img src="imgs/455444-rr.jpg" alt="rl">
+There turn right is very rare, and there is only five samples in the dataset of red right, therefore a larger data set with more example is needed for the network to identified it. 
+
 ### Label = Green Left
+bstld/rgb/test/29430.png: Predicted in 1.603386 seconds.
+Green: 57%
+<img src="imgs/28944-gl.jpg" alt="gl">
+More training need in the green left images since it identify them as green. 
+
 ### Label = Green Right
 
+bstld/rgb/test/654328.png: Predicted in 1.524675 seconds.
+Green: 100%
+Green: 96%
+Green: 85%
+Green: 79%
+
+<img src="imgs/654328-gr.jpg" alt="gr">
+
+Same as red right, this signal is very rare and there is only 13 images with this label, a larger data set is needed to be able to identify his label.
 
 
 
@@ -171,7 +226,7 @@ After training done (after 30000 images results are getting sufficient) try it w
 ## Image Demo
 
 ```html
-./darknet detector test traffic-lights/voc-bosch.data traffic-lights/yolov3-tiny-bosch.cfg traffic-lights/backup/yolov3-tiny-bosch_40000.weights data/40344.png
+./darknet detector test traffic-lights/voc-bosch.data traffic-lights/yolov3-tiny-bosch.cfg traffic-lights/backup/yolov3-tiny-bosch_40000.weights bstld/reg/test/40344.png
 ```
 
 ## Video Demo
